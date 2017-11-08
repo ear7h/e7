@@ -14,7 +14,7 @@ import (
 func TestRemotely(t *testing.T) {
 	*SIBLING = "http://104.131.130.194"
 
-	go testMain()
+	go main()
 
 	time.Sleep(1 * time.Second)
 
