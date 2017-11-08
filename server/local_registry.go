@@ -75,7 +75,14 @@ func registerConnections(l *e7.Ledger) {
 	}
 
 	for _, v := range l.Nodes() {
-		http.Post(v+":"+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		fmt.Println("sending to: ", v)
+		if v == "self" {
+			continue
+		}
+		_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		if err != nil {
+			fmt.Println("send err: ", err)
+		}
 	}
 }
 
