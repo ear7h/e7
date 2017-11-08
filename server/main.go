@@ -13,7 +13,7 @@ import (
 )
 
 // TODO PROD: change to 53 and 54
-const DNS_PORT = ":4453"
+const DNS_PORT = ":53"
 const LEDGER_PORT = ":4454"
 const LOCAL_PORT = ":4455"
 
