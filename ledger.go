@@ -88,13 +88,23 @@ type Ledger struct {
 	password string
 }
 
-func NewLedger(pass string) *Ledger {
-	return &Ledger{
+func NewLedger(pass string) (l *Ledger) {
+	l = &Ledger{
 		NodeId:        _HOSTNAME,
 		ActiveRecords: map[string][]Record{},
-		Timeout:       1 * time.Minute, //TODO: change for prod
+		Timeout:       2 * time.Minute, //TODO: change for prod
 		password:      pass,
 	}
+
+	// auto clean
+	go func() {
+		for {
+			time.Sleep(l.Timeout)
+			l.Clean()
+		}
+	}()
+
+	return
 }
 
 func ParseLedger(pass, src string, byt []byte) *Ledger {
@@ -213,9 +223,21 @@ func (l *Ledger) Nodes() (nodes map[string]string) {
 	return
 }
 
+func (l *Ledger) Clean() {
+	for k, v := range l.ActiveRecords {
+		arr := []Record{}
+		for _, el := range v {
+			if el.TTL(l.Timeout) != 0 {
+				arr = append(arr, el)
+			}
+		}
+		l.ActiveRecords[k] = arr
+	}
+}
+
 // this returns all the resource records matching the query
 func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
-	if name == "ear7h.net" {
+	if name == "ear7h.net." {
 		rr = append(rr, dns.RR(&dns.A{
 			Hdr: dns.RR_Header{
 				Name:   "ear7h.net",

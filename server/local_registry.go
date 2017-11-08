@@ -8,19 +8,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ear7h/e7"
+	"github.com/ear7h/e7/e7c"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
-	"github.com/ear7h/e7/e7c"
 )
 
 const LOCAL_SERVER = "/var/ear7h/e7.sock"
 const PORT_MIN = 8080
 const PORT_MAX = 8090
-
 
 // port to bool
 var avaliablePorts = map[int]bool{}
@@ -52,9 +51,8 @@ func cleanConnections() {
 func registerConnections(l *e7.Ledger) {
 	blk := e7.Block{
 		Services: make([]string, len(activeConnections)),
-		IP: "self",
+		IP:       "self",
 	}
-
 
 	var i = 0
 	for k := range activeConnections {
@@ -68,7 +66,6 @@ func registerConnections(l *e7.Ledger) {
 
 	fmt.Println("registered: ", string(l.Bytes()))
 
-
 	byt, err := json.Marshal(blk)
 	if err != nil {
 		fmt.Println(err)
@@ -79,12 +76,12 @@ func registerConnections(l *e7.Ledger) {
 		if v == "self" {
 			continue
 		}
-		go func () {
-			_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
-			if err != nil {
-				fmt.Println("send err: ", err)
-			}
-		}()
+		_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		if err != nil {
+			fmt.Println("send err: ", err)
+		} else {
+			fmt.Println("self reg successfull at: ", v)
+		}
 	}
 }
 
@@ -97,8 +94,8 @@ func registerService(name string, l *e7.Ledger) (port int) {
 	activeConnections[name] = port
 
 	blk := e7.Block{
-		Services:  []string{name},
-		IP: "self",
+		Services: []string{name},
+		IP:       "self",
 	}
 
 	l.SignBlock(&blk)
@@ -111,7 +108,16 @@ func registerService(name string, l *e7.Ledger) (port int) {
 	}
 
 	for _, v := range l.Nodes() {
-		http.Post(v+":"+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		fmt.Println("sending to: ", v)
+		if v == "self" {
+			continue
+		}
+		_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		if err != nil {
+			fmt.Println("send err: ", err)
+		} else {
+			fmt.Println("self reg successfull at: ", v)
+		}
 	}
 
 	return
