@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"bytes"
+	"time"
 )
 
 // TODO PROD: change to 53 and 54
@@ -23,6 +24,9 @@ var SIBLING = flag.String("sibling", "", "ip address of other node")
 
 func init() {
 	flag.Parse()
+	http.DefaultClient = &http.Client{
+		Timeout: 10 * time.Second,
+	}
 }
 
 func main() {
