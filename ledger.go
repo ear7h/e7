@@ -186,7 +186,7 @@ func (l *Ledger) AddBlock(b Block) (ok bool) {
 
 	// recall block.Records is a map of names to addresses
 	for _, v := range b.Services {
-		l.ActiveRecords[v+".ear7h.net."] = append(l.ActiveRecords[v], Record{
+		l.ActiveRecords[v+".ear7h.net."] = append(l.ActiveRecords[v+".ear7h.net."], Record{
 			Name:   v + ".ear7h.net.",
 			Target: nodeName,
 			IsNode: false,
