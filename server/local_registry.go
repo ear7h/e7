@@ -8,28 +8,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ear7h/e7"
-	"github.com/ear7h/e7/e7c"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
+	"github.com/ear7h/e7/client"
 )
 
-const LOCAL_SERVER = "/var/ear7h/e7.sock"
 const PORT_MIN = 8080
 const PORT_MAX = 8090
 
 // port to bool
-var avaliablePorts = map[int]bool{}
+var availablePorts = map[int]bool{}
 
 // name to port
 var activeConnections = map[string]int{}
 
 func init() {
 	for i := PORT_MIN; i <= PORT_MAX; i++ {
-		avaliablePorts[i] = true
+		availablePorts[i] = true
 	}
 }
 
@@ -38,7 +36,7 @@ func cleanConnections() {
 		port := ":" + strconv.FormatInt(int64(v), 10)
 		l, err := net.Listen("tcp", port)
 		if err != nil {
-			avaliablePorts[v] = true
+			availablePorts[v] = true
 			delete(activeConnections, k)
 		} else {
 			l.Close()
@@ -85,12 +83,20 @@ func registerConnections(l *e7.Ledger) {
 	}
 }
 
-func registerService(name string, l *e7.Ledger) (port int) {
-	for port = range avaliablePorts {
-		delete(avaliablePorts, port)
-		break
+func registerService(name string, port int, l *e7.Ledger) (err error) {
+	 if !availablePorts[port] {
+		 return fmt.Errorf("port already in use")
+	 }
+
+	if _, ok := activeConnections[name]; ok {
+		return fmt.Errorf("name %s already taken", name)
 	}
 
+	if port < PORT_MIN || port > PORT_MAX {
+		return fmt.Errorf("port %d not in range [%d, %d]", port, PORT_MIN, PORT_MAX)
+	}
+
+	delete(availablePorts, port)
 	activeConnections[name] = port
 
 	blk := e7.Block{
@@ -125,14 +131,7 @@ func registerService(name string, l *e7.Ledger) (port int) {
 }
 
 func serveLocal(l *e7.Ledger) error {
-	os.Remove(LOCAL_SERVER)
-
-	ltn, err := net.Listen("unix", LOCAL_SERVER)
-	if err != nil {
-		panic(err)
-	}
-
-	go func() {
+		go func() {
 		for {
 			go cleanConnections()
 			go registerConnections(l)
@@ -140,14 +139,29 @@ func serveLocal(l *e7.Ledger) error {
 		}
 	}()
 
-	defer ltn.Close()
-
-	return http.Serve(ltn, makeLocalHandler(l))
+	return http.ListenAndServe(LOCAL_PORT, makeLocalHandler(l))
 }
 
 func makeLocalHandler(l *e7.Ledger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
+		case http.MethodGet:
+			// get an available port
+			var port int
+			for port = range availablePorts {break}
+
+			res := struct {
+				Port int `json:"port"`
+			}{port}
+
+			byt, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "could not marshal response", http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Write(byt)
 		case http.MethodPost:
 			byt, err := ioutil.ReadAll(r.Body)
 			if err != nil {
@@ -155,7 +169,7 @@ func makeLocalHandler(l *e7.Ledger) http.HandlerFunc {
 				return
 			}
 
-			regRequest := new(e7c.RegistryRequest)
+			regRequest := new(client.RegistryRequest)
 
 			err = json.Unmarshal(byt, regRequest)
 			if err != nil {
@@ -163,16 +177,14 @@ func makeLocalHandler(l *e7.Ledger) http.HandlerFunc {
 				return
 			}
 
-			port := registerService(regRequest.Name, l)
-
-			byt, err = json.Marshal(struct {
-				Port int `json:"port"`
-			}{port})
+			err = registerService(regRequest.Name, regRequest.Port, l)
 			if err != nil {
-				http.Error(w, "couldn't marshal json", http.StatusInternalServerError)
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
 			}
 
 			w.WriteHeader(http.StatusOK)
+			// echo
 			w.Write(byt)
 		}
 	}

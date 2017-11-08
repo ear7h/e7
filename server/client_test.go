@@ -2,11 +2,13 @@ package main
 
 import (
 	"testing"
-	"github.com/ear7h/e7/e7c"
+	"github.com/ear7h/e7/client"
 	"time"
 	"github.com/miekg/dns"
 	"fmt"
 	"github.com/ear7h/e7"
+	"net/http"
+	"strconv"
 )
 
 func testMain() {
@@ -40,13 +42,24 @@ func TestRegister(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	_, err := e7c.Register("test-service")
+	port, err := client.Get()
 	if err != nil {
 		panic(err)
 	}
 
+	err = client.Register("test-service", port)
+	if err != nil {
+		panic(err)
+	}
+
+	addr := "127.0.0.1:" + strconv.FormatInt(int64(port), 10)
+
+	go http.ListenAndServe(addr, makePingHandler())
+
+
 	m := new(dns.Msg)
-	m.SetQuestion("_test-service._tcp.ear7h.net.", dns.TypeSRV)
+
+	m.SetQuestion("test-service.ear7h.net.", dns.TypeA)
 
 	r, err := dns.Exchange(m, "127.0.0.1"+DNS_PORT)
 	if err != nil {

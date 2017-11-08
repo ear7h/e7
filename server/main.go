@@ -14,7 +14,8 @@ import (
 
 // TODO PROD: change to 53 and 54
 const DNS_PORT = ":4453"
-const LEDGER_PORT = ":4434"
+const LEDGER_PORT = ":4454"
+const LOCAL_PORT = ":4455"
 
 //TODO: make tests
 //TODO: password
