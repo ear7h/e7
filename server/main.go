@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"fmt"
+	"encoding/json"
+	"bytes"
 )
 
 // TODO PROD: change to 53 and 54
@@ -43,6 +45,21 @@ func main() {
 		}
 
 		l = e7.ParseLedger(pass, byt)
+
+		// make self known
+		blk := e7.Block{}
+
+		l.SignBlock(&blk)
+
+		byt, err = json.Marshal(blk)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, v := range l.Nodes() {
+			http.Post(v + LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		}
+
 	} else {
 		fmt.Println("WARNING: no root or sibling provided")
 	}

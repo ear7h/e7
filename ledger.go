@@ -92,7 +92,7 @@ func NewLedger(pass string) *Ledger {
 	return &Ledger{
 		NodeId:        _HOSTNAME,
 		ActiveRecords: map[string][]Record{},
-		Timeout:       5 * time.Minute,
+		Timeout:       10 * time.Second, //TODO: change for prod
 		password:      pass,
 	}
 }
