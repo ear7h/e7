@@ -79,10 +79,12 @@ func registerConnections(l *e7.Ledger) {
 		if v == "self" {
 			continue
 		}
-		_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
-		if err != nil {
-			fmt.Println("send err: ", err)
-		}
+		go func () {
+			_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+			if err != nil {
+				fmt.Println("send err: ", err)
+			}
+		}()
 	}
 }
 
@@ -126,8 +128,8 @@ func serveLocal(l *e7.Ledger) error {
 
 	go func() {
 		for {
-			cleanConnections()
-			registerConnections(l)
+			go cleanConnections()
+			go registerConnections(l)
 			time.Sleep((l.Timeout / 10) * 9)
 		}
 	}()

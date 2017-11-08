@@ -25,7 +25,7 @@ var SIBLING = flag.String("sibling", "", "ip address of other node")
 func init() {
 	flag.Parse()
 	http.DefaultClient = &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: 5 * time.Second,
 	}
 }
 
