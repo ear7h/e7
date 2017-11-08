@@ -88,6 +88,7 @@ func registerService(name string, l *e7.Ledger) (port int) {
 	blk := e7.Block{
 		Timestamp: time.Now(),
 		Services:  []string{name},
+		IP: "self",
 	}
 
 	l.SignBlock(&blk)

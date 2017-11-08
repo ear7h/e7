@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"github.com/ear7h/e7"
+	"fmt"
 )
 
 func ipFromAddr(remoteAddr string) string {
@@ -26,6 +27,8 @@ func makeLedgerHandler(l *e7.Ledger) http.HandlerFunc {
 			w.Write(l.Bytes())
 			return
 		case http.MethodPost:
+			fmt.Println("block recieved")
+
 			// decode, verify and add
 			byt, err := ioutil.ReadAll(r.Body)
 			if err != nil {
