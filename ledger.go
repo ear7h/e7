@@ -97,7 +97,7 @@ func NewLedger(pass string) *Ledger {
 	}
 }
 
-func ParseLedger(pass string, byt []byte) *Ledger {
+func ParseLedger(pass, src string, byt []byte) *Ledger {
 	ret := new(Ledger)
 
 	err := json.Unmarshal(byt, ret)
@@ -105,7 +105,16 @@ func ParseLedger(pass string, byt []byte) *Ledger {
 		panic(err)
 	}
 
+	ret.NodeId = Hostname()
 	ret.password = pass
+
+	for k, v := range ret.ActiveRecords {
+		for i, el := range v {
+			if el.Target == "self" {
+				ret.ActiveRecords[k][i].Target = src
+			}
+		}
+	}
 
 	return ret
 }
@@ -164,7 +173,7 @@ func (l *Ledger) AddBlock(b Block) (ok bool) {
 		return
 	}
 
-	// add A record for the sender of the block
+	// add record for the sender of the block
 	nodeName := b.NodeID + ".ear7h.net."
 	l.ActiveRecords[nodeName] = []Record{
 		{

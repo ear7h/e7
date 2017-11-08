@@ -5,7 +5,7 @@ import (
 )
 
 func TestRemotely(t *testing.T) {
-	*SIBLING = "http://ear7h.net"
+	*SIBLING = "http://104.131.130.194"
 
 	main()
 

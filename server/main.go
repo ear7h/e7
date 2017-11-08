@@ -44,7 +44,10 @@ func main() {
 			panic(err)
 		}
 
-		l = e7.ParseLedger(pass, byt)
+		src := res.Request.Host
+		src = src[:len(src) - len(LEDGER_PORT)]
+		fmt.Println("src: ", src)
+		l = e7.ParseLedger(pass, src,byt)
 
 		// make self known
 		blk := e7.Block{}

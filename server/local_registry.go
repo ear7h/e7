@@ -46,17 +46,16 @@ func cleanConnections() {
 		}
 	}
 
-	activeConnections[e7.Hostname()] = PROXY_PORT
+	//activeConnections[e7.Hostname()] = PROXY_PORT
 }
 
 func registerConnections(l *e7.Ledger) {
 	blk := e7.Block{
 		Services: make([]string, len(activeConnections)),
+		IP: "self",
 	}
 
-	// unlike this package which uses port
-	// as a key for a service,
-	// e7 block uses name as key
+
 	var i = 0
 	for k := range activeConnections {
 		blk.Services[i] = k
@@ -66,6 +65,9 @@ func registerConnections(l *e7.Ledger) {
 	l.SignBlock(&blk)
 
 	l.AddBlock(blk)
+
+	fmt.Println("registered: ", string(l.Bytes()))
+
 
 	byt, err := json.Marshal(blk)
 	if err != nil {
@@ -86,7 +88,6 @@ func registerService(name string, l *e7.Ledger) (port int) {
 	activeConnections[name] = port
 
 	blk := e7.Block{
-		Timestamp: time.Now(),
 		Services:  []string{name},
 		IP: "self",
 	}
