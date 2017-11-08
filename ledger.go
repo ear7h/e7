@@ -74,6 +74,8 @@ type Ledger struct {
 	// it is used to identify local nodes within the Ledger
 	NodeId string `json:"node_id"`
 
+	RootIP string `json:"root_ip"`
+
 	// node hostnames and ip addresses
 	// A and AAAA records
 	ActiveRecords map[string][]Record `json:"active_records"`
@@ -204,6 +206,26 @@ func (l *Ledger) Nodes() (nodes map[string]string) {
 
 // this returns all the resource records matching the query
 func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
+	if name == "ear7h.net" {
+		rr = append(rr, dns.RR(&dns.A{
+			Hdr: dns.RR_Header{
+				Name:   "ear7h.net",
+				Rrtype: dns.TypeA,
+				Class:  dns.ClassINET,
+				Ttl:    uint32(l.Timeout),
+			},
+			A: net.ParseIP(l.RootIP),
+		}), dns.RR(&dns.AAAA{
+			Hdr: dns.RR_Header{
+				Name:   "ear7h.net",
+				Rrtype: dns.TypeAAAA,
+				Class:  dns.ClassINET,
+				Ttl:    uint32(l.Timeout),
+			},
+			AAAA: net.ParseIP(l.RootIP),
+		}))
+	}
+
 	ars, ok := l.ActiveRecords[name]
 	if !ok {
 		return
@@ -216,7 +238,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 				Hdr: dns.RR_Header{
 					Name:   v.Name,
 					Rrtype: dns.TypeA,
-					Class: dns.ClassINET,
+					Class:  dns.ClassINET,
 					Ttl:    uint32(v.TTL(l.Timeout)),
 				},
 				A: net.ParseIP(v.Target),
@@ -224,7 +246,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 				Hdr: dns.RR_Header{
 					Name:   v.Name,
 					Rrtype: dns.TypeAAAA,
-					Class: dns.ClassINET,
+					Class:  dns.ClassINET,
 					Ttl:    uint32(v.TTL(l.Timeout)),
 				},
 				AAAA: net.ParseIP(v.Target),
@@ -236,7 +258,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 			Hdr: dns.RR_Header{
 				Name:   v.Name,
 				Rrtype: dns.TypeCNAME,
-				Class: dns.ClassINET,
+				Class:  dns.ClassINET,
 				Ttl:    uint32(v.TTL(l.Timeout)),
 			},
 			Target: v.Target,

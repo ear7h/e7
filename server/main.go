@@ -1,22 +1,51 @@
 package main
 
 import (
+	"flag"
 	"github.com/ear7h/e7"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"fmt"
 )
 
 // TODO PROD: change to 53 and 54
 const DNS_PORT = ":4453"
 const LEDGER_PORT = ":4434"
 
-
 //TODO: make tests
 //TODO: password
 //TODO: ledger client
+
+var SIBLING = flag.String("sibling", "", "ip address of other node")
+
+func init() {
+	flag.Parse()
+}
 
 func main() {
 	pass := "asd"
 
 	l := e7.NewLedger(pass)
+
+	if root := os.Getenv("EAR7H_ROOT"); root != "" {
+		l.RootIP = root
+	} else if *SIBLING != "" {
+		// if a sibling is given
+		res, err := http.Get(*SIBLING + LEDGER_PORT)
+		if err != nil {
+			panic(err)
+		}
+
+		byt, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			panic(err)
+		}
+
+		l = e7.ParseLedger(pass, byt)
+	} else {
+		fmt.Println("WARNING: no root or sibling provided")
+	}
 
 	errc := make(chan error, 1)
 
@@ -36,5 +65,5 @@ func main() {
 		errc <- serveProxy(l)
 	}()
 
-	panic(<- errc)
+	panic(<-errc)
 }

@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"flag"
 	"github.com/ear7h/e7"
 )
 
@@ -23,14 +22,8 @@ func makeLedgerHandler(l *e7.Ledger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			byt, err := json.Marshal(l)
-			if err != nil {
-				http.Error(w, "error marshaling json", http.StatusInternalServerError)
-				return
-			}
-
 			w.WriteHeader(http.StatusOK)
-			w.Write(byt)
+			w.Write(l.Bytes())
 			return
 		case http.MethodPost:
 			// decode, verify and add
@@ -60,29 +53,7 @@ func makeLedgerHandler(l *e7.Ledger) http.HandlerFunc {
 	}
 }
 
-var SIBLING = flag.String("sibling", "", "ip address of other node")
-func init() {
-	flag.Parse()
-}
-
 func serveLedger(l *e7.Ledger) error {
-	// if a sibling is given
-	if *SIBLING != "" {
-		res, err := http.Get(*SIBLING + LEDGER_PORT)
-		if err != nil {
-			panic(err)
-		}
-
-		byt, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			panic(err)
-		}
-
-		err = json.Unmarshal(byt, &l)
-		if err != nil {
-			panic(err)
-		}
-	}
 
 	return http.ListenAndServe(LEDGER_PORT, makeLedgerHandler(l))
 

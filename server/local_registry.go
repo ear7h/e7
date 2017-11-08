@@ -21,6 +21,7 @@ const LOCAL_SERVER = "/var/ear7h/e7.sock"
 const PORT_MIN = 8080
 const PORT_MAX = 8090
 
+
 // port to bool
 var avaliablePorts = map[int]bool{}
 
@@ -107,10 +108,7 @@ func registerService(name string, l *e7.Ledger) (port int) {
 }
 
 func serveLocal(l *e7.Ledger) error {
-	err := os.Remove(LOCAL_SERVER)
-	if err != nil {
-		panic(err)
-	}
+	os.Remove(LOCAL_SERVER)
 
 	ltn, err := net.Listen("unix", LOCAL_SERVER)
 	if err != nil {
