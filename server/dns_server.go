@@ -10,12 +10,12 @@ func serveDNS(l *e7.Ledger) error {
 
 	dns.HandleFunc(".", makeDNSHandler(l))
 	go func() {
-		srv := &dns.Server{Addr: DNS_PORT, Net: "udp"}
+		srv := &dns.Server{Addr: DNS_ADDR, Net: "udp"}
 		ret <- srv.ListenAndServe()
 
 	}()
 	go func() {
-		srv := &dns.Server{Addr: DNS_PORT, Net: "tcp"}
+		srv := &dns.Server{Addr: DNS_ADDR, Net: "tcp"}
 		ret <- srv.ListenAndServe()
 	}()
 

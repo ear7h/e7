@@ -13,8 +13,8 @@ import (
 )
 
 // TODO PROD: change to 53 and 54
-const DNS_PORT = ":53"
-const LEDGER_PORT = ":4454"
+const DNS_ADDR = "ns.ear7h.net:53"
+const LEDGER_ADDR = "ns.ear7h.net:4454"
 const LOCAL_PORT = ":4455"
 
 //TODO: make tests
@@ -39,7 +39,7 @@ func main() {
 		l.RootIP = root
 	} else if *SIBLING != "" {
 		// if a sibling is given
-		res, err := http.Get(*SIBLING + LEDGER_PORT)
+		res, err := http.Get(*SIBLING + LEDGER_ADDR)
 		if err != nil {
 			panic(err)
 		}
@@ -50,7 +50,7 @@ func main() {
 		}
 
 		src := res.Request.Host
-		src = src[:len(src) - len(LEDGER_PORT)]
+		src = src[:len(src) - len(LEDGER_ADDR)]
 		fmt.Println("src: ", src)
 		l = e7.ParseLedger(pass, src,byt)
 
@@ -65,7 +65,7 @@ func main() {
 		}
 
 		for _, v := range l.Nodes() {
-			http.Post(v + LEDGER_PORT, "text/json", bytes.NewReader(byt))
+			http.Post(v +LEDGER_ADDR, "text/json", bytes.NewReader(byt))
 		}
 
 	} else {

@@ -30,7 +30,7 @@ func TestLedgerPost(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(byt)
-	res, err := http.Post("http://127.0.0.1" + LEDGER_PORT, "text/json", buf)
+	res, err := http.Post("http://127.0.0.1" +LEDGER_ADDR, "text/json", buf)
 	if err != nil {
 		panic(err)
 	}
@@ -62,12 +62,12 @@ func TestLedgerGet(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(byt)
-	_, err = http.Post("http://127.0.0.1" + LEDGER_PORT, "text/json", buf)
+	_, err = http.Post("http://127.0.0.1" +LEDGER_ADDR, "text/json", buf)
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := http.Get("http://127.0.0.1" + LEDGER_PORT)
+	res, err := http.Get("http://127.0.0.1" + LEDGER_ADDR)
 	byt, err = ioutil.ReadAll(res.Body)
 	if err != nil {
 		panic(err)
@@ -94,12 +94,12 @@ func TestLedgerPostFail(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(byt)
-	_, err = http.Post("http://127.0.0.1" + LEDGER_PORT, "text/json", buf)
+	_, err = http.Post("http://127.0.0.1" +LEDGER_ADDR, "text/json", buf)
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := http.Get("http://127.0.0.1" + LEDGER_PORT)
+	res, err := http.Get("http://127.0.0.1" + LEDGER_ADDR)
 	if err != nil {
 		panic(err)
 	}

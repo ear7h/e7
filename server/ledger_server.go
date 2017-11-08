@@ -58,6 +58,6 @@ func makeLedgerHandler(l *e7.Ledger) http.HandlerFunc {
 
 func serveLedger(l *e7.Ledger) error {
 
-	return http.ListenAndServe(LEDGER_PORT, makeLedgerHandler(l))
+	return http.ListenAndServe(LEDGER_ADDR, makeLedgerHandler(l))
 
 }

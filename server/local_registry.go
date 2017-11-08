@@ -74,7 +74,7 @@ func registerConnections(l *e7.Ledger) {
 		if v == "self" {
 			continue
 		}
-		_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		_, err := http.Post("http://"+v+LEDGER_ADDR, "text/json", bytes.NewReader(byt))
 		if err != nil {
 			fmt.Println("send err: ", err)
 		} else {
@@ -118,7 +118,7 @@ func registerService(name string, port int, l *e7.Ledger) (err error) {
 		if v == "self" {
 			continue
 		}
-		_, err := http.Post("http://"+v+LEDGER_PORT, "text/json", bytes.NewReader(byt))
+		_, err := http.Post("http://"+v+LEDGER_ADDR, "text/json", bytes.NewReader(byt))
 		if err != nil {
 			fmt.Println("send err: ", err)
 		} else {

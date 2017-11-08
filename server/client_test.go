@@ -61,7 +61,7 @@ func TestRegister(t *testing.T) {
 
 	m.SetQuestion("test-service.ear7h.net.", dns.TypeA)
 
-	r, err := dns.Exchange(m, "127.0.0.1"+DNS_PORT)
+	r, err := dns.Exchange(m, "127.0.0.1"+DNS_ADDR)
 	if err != nil {
 		panic(err)
 	}

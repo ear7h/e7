@@ -35,7 +35,7 @@ func TestRemotely(t *testing.T) {
 
 	m.SetQuestion("ear7h.net.", dns.TypeA)
 
-	r, err := dns.Exchange(m, "104.131.130.194"+DNS_PORT)
+	r, err := dns.Exchange(m, "104.131.130.194"+DNS_ADDR)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ func TestRemotely(t *testing.T) {
 
 	m.SetQuestion(e7.Hostname()+".ear7h.net.", dns.TypeA)
 
-	r, err = dns.Exchange(m, "104.131.130.194"+DNS_PORT)
+	r, err = dns.Exchange(m, "104.131.130.194"+DNS_ADDR)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ func TestRemotely(t *testing.T) {
 
 	m.SetQuestion("test-service.ear7h.net.", dns.TypeA)
 
-	r, err = dns.Exchange(m, "104.131.130.194"+DNS_PORT)
+	r, err = dns.Exchange(m, "104.131.130.194"+DNS_ADDR)
 	if err != nil {
 		panic(err)
 	}

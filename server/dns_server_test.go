@@ -32,7 +32,7 @@ func TestDNS(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(byt)
-	res, err := http.Post("http://127.0.0.1" + LEDGER_PORT, "text/json", buf)
+	res, err := http.Post("http://127.0.0.1" +LEDGER_ADDR, "text/json", buf)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ func TestDNS(t *testing.T) {
 	m := new(dns.Msg)
 	m.SetQuestion(e7.Hostname()+".ear7h.net.", dns.TypeA)
 
-	r, err := dns.Exchange(m, "127.0.0.1"+DNS_PORT)
+	r, err := dns.Exchange(m, "127.0.0.1"+DNS_ADDR)
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ func TestDNS(t *testing.T) {
 
 	m.SetQuestion("test-service"+".ear7h.net.", dns.TypeA)
 
-	r, err = dns.Exchange(m, "127.0.0.1"+DNS_PORT)
+	r, err = dns.Exchange(m, "127.0.0.1"+DNS_ADDR)
 	if err != nil {
 		panic(err)
 	}
