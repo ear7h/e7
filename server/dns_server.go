@@ -38,7 +38,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 
 		if q.Qtype == dns.TypeSOA {
 			msg.Answer = []dns.RR {
-				dns.SOA{
+				&dns.SOA{
 					Hdr: dns.RR_Header{
 						Name: "ear7h.net.",
 						Rrtype: dns.TypeSOA,
