@@ -25,7 +25,7 @@ func serveDNS(l *e7.Ledger) error {
 
 func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 	return func(w dns.ResponseWriter, r *dns.Msg) {
-		fmt.Println("got dns message, ", r.String())
+		fmt.Println("got dns message for: ", r.Question[0].Name)
 
 		msg := new(dns.Msg)
 
