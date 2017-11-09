@@ -279,6 +279,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 	}
 
 	for _, v := range ars {
+		DO_NODE:
 		if v.IsNode {
 			rr = append(rr, dns.RR(&dns.A{
 				Hdr: dns.RR_Header{
@@ -309,6 +310,15 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 			},
 			Target: v.Target,
 		}))
+
+		// find the node hosting the service
+		lenOneArr, ok := l.ActiveRecords[v.Target]
+		if !ok || len(lenOneArr) == 0 {
+			continue
+		}
+
+		v = lenOneArr[0]
+		goto DO_NODE
 	}
 	return
 }
