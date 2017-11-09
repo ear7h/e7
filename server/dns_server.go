@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/miekg/dns"
-	"github.com/ear7h/e7"
 	"fmt"
+	"github.com/ear7h/e7"
+	"github.com/miekg/dns"
 	"time"
 )
 
@@ -24,6 +24,26 @@ func serveDNS(l *e7.Ledger) error {
 	return <-ret
 }
 
+func soa() []dns.RR {
+	return []dns.RR{
+		&dns.SOA{
+			Hdr: dns.RR_Header{
+				Name:   "ear7h.net.",
+				Rrtype: dns.TypeSOA,
+				Class:  dns.ClassINET,
+				Ttl:    uint32(l.Timeout),
+			},
+			Ns:      "104.131.130.194",
+			Mbox:    "julio.grillo98@gmail.com",
+			Serial:  uint32(l.Mutations),
+			Refresh: uint32(l.Timeout.Seconds()),
+			Retry:   uint32(l.Timeout.Seconds() / 4),
+			Expire:  uint32(l.Timeout.Seconds() * 2),
+			Minttl:  uint32(l.Timeout.Seconds() / 2),
+		},
+	}
+}
+
 func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 	return func(w dns.ResponseWriter, r *dns.Msg) {
 		start := time.Now()
@@ -36,32 +56,15 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 
 		q := r.Question[0]
 
-		if q.Qtype == dns.TypeSOA {
-			msg.Answer = []dns.RR {
-				&dns.SOA{
-					Hdr: dns.RR_Header{
-						Name: "ear7h.net.",
-						Rrtype: dns.TypeSOA,
-						Class: dns.ClassINET,
-						Ttl: uint32(l.Timeout),
-					},
-					Ns: "ns.ear7h.net.",
-					Mbox: "julio.grillo98@gmail.com",
-					Serial: uint32(l.Mutations),
-					Refresh: uint32(l.Timeout.Seconds()),
-					Retry: uint32(l.Timeout.Seconds() / 4),
-					Expire: uint32(l.Timeout.Seconds() * 2),
-					Minttl: uint32(l.Timeout.Seconds() / 2),
-				},
+		if q.Qtype != dns.TypeCNAME && q.Qtype != dns.TypeA && q.Qtype != dns.TypeAAAA {
+			msg.Answer = soa()
+		} else {
+			rr, ok := l.Query(q.Name)
+			if ok && len(rr) != 0 {
+				msg.Answer = rr
+			} else {
+				msg.Answer = soa()
 			}
-
-			w.WriteMsg(msg)
-			return
-		}
-
-		rr, ok := l.Query(q.Name)
-		if ok {
-			msg.Answer = rr
 		}
 
 		w.WriteMsg(msg)
