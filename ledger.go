@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"sync"
 )
 
 /*
@@ -78,6 +79,10 @@ type Ledger struct {
 
 	SelfIP string `json:"self_ip"`
 
+	// keeps track of the number of changes
+	// since the creation of ledger
+	Mutations int `json:"mutations"`
+
 	// node hostnames and ip addresses
 	// A and AAAA records
 	ActiveRecords map[string][]Record `json:"active_records"`
@@ -95,6 +100,7 @@ func NewLedger(pass string) (l *Ledger) {
 		NodeId:        _HOSTNAME,
 		ActiveRecords: map[string][]Record{},
 		Timeout:       2 * time.Minute, //TODO: change for prod
+		ar: sync.RWMutex{},
 		password:      pass,
 	}
 
@@ -203,6 +209,7 @@ func (l *Ledger) AddBlock(b Block) (ok bool) {
 	}
 
 	ok = true
+	l.Mutations ++
 	return
 }
 
@@ -235,6 +242,8 @@ func (l *Ledger) Clean() {
 		} else {
 			l.ActiveRecords[k] = arr
 		}
+
+		l.Mutations ++
 	}
 }
 

@@ -36,6 +36,29 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 
 		q := r.Question[0]
 
+		if q.Qtype == dns.TypeSOA {
+			msg.Answer = []dns.RR {
+				dns.SOA{
+					Hdr: dns.RR_Header{
+						Name: "ear7h.net.",
+						Rrtype: dns.TypeSOA,
+						Class: dns.ClassINET,
+						Ttl: uint32(l.Timeout),
+					},
+					Ns: "ns.ear7h.net.",
+					Mbox: "julio.grillo98@gmail.com",
+					Serial: uint32(l.Mutations),
+					Refresh: uint32(l.Timeout.Seconds()),
+					Retry: uint32(l.Timeout.Seconds() / 4),
+					Expire: uint32(l.Timeout.Seconds() * 2),
+					Minttl: uint32(l.Timeout.Seconds() / 2),
+				},
+			}
+
+			w.WriteMsg(msg)
+			return
+		}
+
 		rr, ok := l.Query(q.Name)
 		if ok {
 			msg.Answer = rr
