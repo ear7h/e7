@@ -63,7 +63,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 			if ok && len(rr) != 0 {
 				msg.Answer = rr
 			} else {
-				msg.Answer = soa()
+				msg.Answer = soa(l)
 			}
 		}
 
