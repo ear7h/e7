@@ -240,7 +240,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 	fmt.Println("query for:"+name)
 	fmt.Println("ear7h.net. == "+name, name == "ear7h.net.")
 
-	if name == "ear7h.net." {
+	if ok = name == "ear7h.net."; ok {
 		rr = append(rr, dns.RR(&dns.A{
 			Hdr: dns.RR_Header{
 				Name:   "ear7h.net",
