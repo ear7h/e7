@@ -49,7 +49,6 @@ func cleanConnections() {
 func registerConnections(l *e7.Ledger) {
 	blk := e7.Block{
 		Services: make([]string, len(activeConnections)),
-		IP:       "self",
 	}
 
 	var i = 0
@@ -101,7 +100,6 @@ func registerService(name string, port int, l *e7.Ledger) (err error) {
 
 	blk := e7.Block{
 		Services: []string{name},
-		IP:       "self",
 	}
 
 	l.SignBlock(&blk)

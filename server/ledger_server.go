@@ -7,6 +7,7 @@ import (
 	"strings"
 	"github.com/ear7h/e7"
 	"fmt"
+	"net"
 )
 
 func ipFromAddr(remoteAddr string) string {
@@ -23,6 +24,10 @@ func makeLedgerHandler(l *e7.Ledger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
+			i := strings.LastIndex(r.RemoteAddr, ":")
+
+			w.Header().Set("Client-IP", r.RemoteAddr[:i])
+
 			w.WriteHeader(http.StatusOK)
 			w.Write(l.Bytes())
 			return

@@ -17,6 +17,8 @@ var DNS_ADDR = ":53"
 const LEDGER_ADDR = ":4454"
 const LOCAL_PORT = ":4455"
 
+var SELF = "self"
+
 //TODO: make tests
 //TODO: password
 //TODO: ledger client
@@ -37,6 +39,7 @@ func main() {
 
 	if root := os.Getenv("EAR7H_ROOT"); root != "" {
 		l.RootIP = root
+		l.SelfIP = root
 	} else if *SIBLING != "" {
 		// if a sibling is given
 		res, err := http.Get(*SIBLING + LEDGER_ADDR)
@@ -49,10 +52,10 @@ func main() {
 			panic(err)
 		}
 
-		src := res.Request.Host
-		src = src[:len(src) - len(LEDGER_ADDR)]
-		fmt.Println("src: ", src)
-		l = e7.ParseLedger(pass, src,byt)
+		selfIP := res.Header.Get("Client-IP")
+
+		fmt.Println("ip: ", selfIP)
+		l = e7.ParseLedger(pass, selfIP, byt)
 
 		// make self known
 		blk := e7.Block{}

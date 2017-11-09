@@ -76,6 +76,8 @@ type Ledger struct {
 
 	RootIP string `json:"root_ip"`
 
+	SelfIP string `json:"self_ip"`
+
 	// node hostnames and ip addresses
 	// A and AAAA records
 	ActiveRecords map[string][]Record `json:"active_records"`
@@ -107,7 +109,7 @@ func NewLedger(pass string) (l *Ledger) {
 	return
 }
 
-func ParseLedger(pass, src string, byt []byte) *Ledger {
+func ParseLedger(pass, selfIP string, byt []byte) *Ledger {
 	ret := new(Ledger)
 
 	err := json.Unmarshal(byt, ret)
@@ -117,14 +119,7 @@ func ParseLedger(pass, src string, byt []byte) *Ledger {
 
 	ret.NodeId = Hostname()
 	ret.password = pass
-
-	for k, v := range ret.ActiveRecords {
-		for i, el := range v {
-			if el.Target == "self" {
-				ret.ActiveRecords[k][i].Target = src
-			}
-		}
-	}
+	ret.SelfIP = selfIP
 
 	return ret
 }
@@ -141,8 +136,10 @@ func (l *Ledger) SignBlock(b *Block) {
 	// to check, history would only have self signed blocks
 	b.NodeID = l.NodeId
 	b.Timestamp = time.Now()
+	b.IP = l.SelfIP
 
 	str := b.NodeID +
+		b.IP +
 		l.password +
 		b.Timestamp.Format(time.RFC3339Nano) +
 		strings.Join(b.Services, "")
@@ -159,6 +156,7 @@ func (l *Ledger) verifyBlock(b Block) (ok bool) {
 	}
 
 	str := b.NodeID +
+		b.IP +
 		l.password +
 		b.Timestamp.Format(time.RFC3339Nano) +
 		strings.Join(b.Services, "")
@@ -231,7 +229,12 @@ func (l *Ledger) Clean() {
 				arr = append(arr, el)
 			}
 		}
-		l.ActiveRecords[k] = arr
+
+		if len(arr) == 0 {
+			delete(l.ActiveRecords, k)
+		} else {
+			l.ActiveRecords[k] = arr
+		}
 	}
 }
 
