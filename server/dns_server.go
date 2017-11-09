@@ -53,7 +53,7 @@ func ns(l *e7.Ledger) []dns.RR {
 				Class:  dns.ClassINET,
 				Ttl:    uint32(l.Timeout),
 			},
-			Ns:      "ns1.ear7h.net.",
+			Ns: "ns1.ear7h.net.",
 		}, &dns.NS{
 			Hdr: dns.RR_Header{
 				Name:   "ear7h.net.",
@@ -61,7 +61,7 @@ func ns(l *e7.Ledger) []dns.RR {
 				Class:  dns.ClassINET,
 				Ttl:    uint32(l.Timeout),
 			},
-			Ns:      "ns2.ear7h.net.",
+			Ns: "ns2.ear7h.net.",
 		},
 	}
 }
@@ -80,9 +80,16 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 
 		q := r.Question[0]
 
-		if q.Qtype != dns.TypeCNAME && q.Qtype != dns.TypeA && q.Qtype != dns.TypeAAAA {
+		switch q.Qtype {
+		case dns.TypeNS:
+			msg.Answer = ns(l)
+		case dns.TypeSOA:
 			msg.Answer = soa(l)
-		} else {
+		case dns.TypeCNAME:
+			fallthrough
+		case dns.TypeA:
+			fallthrough
+		case dns.TypeAAAA:
 			rr, ok := l.Query(q.Name)
 			if ok && len(rr) != 0 {
 				msg.Answer = rr
