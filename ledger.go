@@ -245,7 +245,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 	if ok = name == "ear7h.net."; ok {
 		rr = append(rr, dns.RR(&dns.A{
 			Hdr: dns.RR_Header{
-				Name:   "ear7h.net",
+				Name:   "ear7h.net.",
 				Rrtype: dns.TypeA,
 				Class:  dns.ClassINET,
 				Ttl:    uint32(l.Timeout),
@@ -253,7 +253,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 			A: net.ParseIP(l.RootIP),
 		}), dns.RR(&dns.AAAA{
 			Hdr: dns.RR_Header{
-				Name:   "ear7h.net",
+				Name:   "ear7h.net.",
 				Rrtype: dns.TypeAAAA,
 				Class:  dns.ClassINET,
 				Ttl:    uint32(l.Timeout),
