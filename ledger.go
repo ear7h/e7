@@ -100,7 +100,6 @@ func NewLedger(pass string) (l *Ledger) {
 		NodeId:        _HOSTNAME,
 		ActiveRecords: map[string][]Record{},
 		Timeout:       2 * time.Minute, //TODO: change for prod
-		ar: sync.RWMutex{},
 		password:      pass,
 	}
 
