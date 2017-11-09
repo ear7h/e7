@@ -237,6 +237,8 @@ func (l *Ledger) Clean() {
 
 // this returns all the resource records matching the query
 func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
+	name = strings.Replace(name, " ", "", -1)
+
 	if name == "ear7h.net." {
 		rr = append(rr, dns.RR(&dns.A{
 			Hdr: dns.RR_Header{
