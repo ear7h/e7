@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	"sync"
 )
 
 /*
