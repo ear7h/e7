@@ -51,7 +51,7 @@ func ns(l *e7.Ledger) []dns.RR {
 				Name:   "ear7h.net.",
 				Rrtype: dns.TypeNS,
 				Class:  dns.ClassINET,
-				Ttl:    uint32(l.Timeout),
+				Ttl:    uint32(l.Timeout.Seconds()),
 			},
 			Ns: "ns1.ear7h.net.",
 		}, &dns.NS{
@@ -59,7 +59,7 @@ func ns(l *e7.Ledger) []dns.RR {
 				Name:   "ear7h.net.",
 				Rrtype: dns.TypeNS,
 				Class:  dns.ClassINET,
-				Ttl:    uint32(l.Timeout),
+				Ttl:    uint32(l.Timeout.Seconds()),
 			},
 			Ns: "ns2.ear7h.net.",
 		},
