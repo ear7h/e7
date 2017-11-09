@@ -37,6 +37,7 @@ func testMain() {
 }
 
 func TestRegister(t *testing.T) {
+	DNS_ADDR = ":4453"
 
 	go testMain()
 

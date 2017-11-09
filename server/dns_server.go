@@ -33,13 +33,27 @@ func soa(l *e7.Ledger) []dns.RR {
 				Class:  dns.ClassINET,
 				Ttl:    uint32(l.Timeout),
 			},
-			Ns:      "104.131.130.194",
+			Ns:      "104.131.130.194.",
 			Mbox:    "julio.grillo98@gmail.com",
 			Serial:  uint32(l.Mutations),
 			Refresh: uint32(l.Timeout.Seconds()),
 			Retry:   uint32(l.Timeout.Seconds() / 4),
 			Expire:  uint32(l.Timeout.Seconds() * 2),
 			Minttl:  uint32(l.Timeout.Seconds() / 2),
+		},
+	}
+}
+
+func ns(l *e7.Ledger) []dns.RR {
+	return []dns.RR{
+		&dns.NS{
+			Hdr: dns.RR_Header{
+				Name:   "ear7h.net.",
+				Rrtype: dns.TypeNS,
+				Class:  dns.ClassINET,
+				Ttl:    uint32(l.Timeout),
+			},
+			Ns:      "104.131.130.194.",
 		},
 	}
 }
@@ -53,6 +67,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 
 		msg.SetReply(r)
 		msg.Authoritative = true
+		msg.Ns = ns(l)
 
 		q := r.Question[0]
 
