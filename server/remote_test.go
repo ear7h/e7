@@ -63,3 +63,16 @@ func TestRemote(t *testing.T) {
 	fmt.Println(r)
 
 }
+
+func TestRemoteDNS(t *testing.T) {
+	m := new(dns.Msg)
+
+	m.SetQuestion("ear7h.net.", dns.TypeA)
+
+	r, err := dns.Exchange(m, "104.131.130.194"+DNS_ADDR)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(r)
+}

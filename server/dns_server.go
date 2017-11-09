@@ -40,6 +40,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 		}
 
 		w.WriteMsg(msg)
+		w.Close()
 
 		fmt.Println("responding: ", msg.String())
 	}
