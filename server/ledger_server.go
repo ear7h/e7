@@ -7,7 +7,6 @@ import (
 	"strings"
 	"github.com/ear7h/e7"
 	"fmt"
-	"net"
 )
 
 func ipFromAddr(remoteAddr string) string {
