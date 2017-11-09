@@ -258,7 +258,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 				Name:   "ear7h.net.",
 				Rrtype: dns.TypeA,
 				Class:  dns.ClassINET,
-				Ttl:    uint32(l.Timeout),
+				Ttl:    uint32(l.Timeout.Seconds()),
 			},
 			A: net.ParseIP(l.RootIP),
 		}, &dns.AAAA{
@@ -266,7 +266,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 				Name:   "ear7h.net.",
 				Rrtype: dns.TypeAAAA,
 				Class:  dns.ClassINET,
-				Ttl:    uint32(l.Timeout),
+				Ttl:    uint32(l.Timeout.Seconds()),
 			},
 			AAAA: net.ParseIP(l.RootIP),
 		})
@@ -286,7 +286,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 					Name:   v.Name,
 					Rrtype: dns.TypeA,
 					Class:  dns.ClassINET,
-					Ttl:    uint32(v.TTL(l.Timeout)),
+					Ttl:    uint32(v.TTL(l.Timeout).Seconds()),
 				},
 				A: net.ParseIP(v.Target),
 			}), dns.RR(&dns.AAAA{
@@ -294,7 +294,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 					Name:   v.Name,
 					Rrtype: dns.TypeAAAA,
 					Class:  dns.ClassINET,
-					Ttl:    uint32(v.TTL(l.Timeout)),
+					Ttl:    uint32(v.TTL(l.Timeout).Seconds()),
 				},
 				AAAA: net.ParseIP(v.Target),
 			}))
@@ -306,7 +306,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 				Name:   v.Name,
 				Rrtype: dns.TypeCNAME,
 				Class:  dns.ClassINET,
-				Ttl:    uint32(v.TTL(l.Timeout)),
+				Ttl:    uint32(v.TTL(l.Timeout).Seconds()),
 			},
 			Target: v.Target,
 		}))
