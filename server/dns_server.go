@@ -70,6 +70,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 	return func(w dns.ResponseWriter, r *dns.Msg) {
 		start := time.Now()
 		fmt.Println("got dns message for:", r.Question[0].Name)
+		fmt.Println("message from: ", w.RemoteAddr())
 
 		msg := new(dns.Msg)
 
