@@ -255,6 +255,7 @@ func (l *Ledger) Query(name string) (rr []dns.RR, ok bool) {
 			},
 			AAAA: net.ParseIP(l.RootIP),
 		}))
+		return
 	}
 
 	ars, ok := l.ActiveRecords[name]
