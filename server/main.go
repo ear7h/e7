@@ -13,8 +13,8 @@ import (
 )
 
 // TODO PROD: change to 53 and 54
-const DNS_ADDR = "ns.ear7h.net:53"
-const LEDGER_ADDR = "ns.ear7h.net:4454"
+const DNS_ADDR = ":53"
+const LEDGER_ADDR = ":4454"
 const LOCAL_PORT = ":4455"
 
 //TODO: make tests
