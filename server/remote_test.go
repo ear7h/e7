@@ -11,12 +11,14 @@ import (
 	"strconv"
 )
 
-func TestRemotely(t *testing.T) {
+func TestRemote(t *testing.T) {
 	*SIBLING = "http://104.131.130.194"
+	DNS_ADDR = ":4453"
 
 	go main()
 
 	time.Sleep(1 * time.Second)
+	DNS_ADDR = ":53"
 
 	port, err := client.Get()
 	if err != nil {
