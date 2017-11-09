@@ -24,7 +24,7 @@ func serveDNS(l *e7.Ledger) error {
 	return <-ret
 }
 
-func soa() []dns.RR {
+func soa(l *e7.Ledger) []dns.RR {
 	return []dns.RR{
 		&dns.SOA{
 			Hdr: dns.RR_Header{
@@ -57,7 +57,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 		q := r.Question[0]
 
 		if q.Qtype != dns.TypeCNAME && q.Qtype != dns.TypeA && q.Qtype != dns.TypeAAAA {
-			msg.Answer = soa()
+			msg.Answer = soa(l)
 		} else {
 			rr, ok := l.Query(q.Name)
 			if ok && len(rr) != 0 {
