@@ -4,6 +4,7 @@ import (
 	"github.com/miekg/dns"
 	"github.com/ear7h/e7"
 	"fmt"
+	"time"
 )
 
 func serveDNS(l *e7.Ledger) error {
@@ -25,6 +26,7 @@ func serveDNS(l *e7.Ledger) error {
 
 func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 	return func(w dns.ResponseWriter, r *dns.Msg) {
+		start := time.Now()
 		fmt.Println("got dns message for:", r.Question[0].Name)
 
 		msg := new(dns.Msg)
@@ -40,7 +42,7 @@ func makeDNSHandler(l *e7.Ledger) dns.HandlerFunc {
 		}
 
 		w.WriteMsg(msg)
-
+		fmt.Println("end: ", time.Now().Sub(start))
 		fmt.Println("responding: ", msg.String())
 	}
 }
